@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 3 · App final · Simulador do Workshop SDD</title>
+<meta name="description" content="O Monitor de hábitos gerado no workshop, funcionando num navegador simulado.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/sim.css">
+<style>
+  /* moldura de navegador simulado */
+  .navegador{border:1px solid var(--borda2);border-radius:12px;overflow:hidden;background:var(--card);box-shadow:0 6px 24px rgba(0,0,0,.08)}
+  .nav-barra{display:flex;align-items:center;gap:.5rem;padding:.45rem .7rem;background:var(--card2);border-bottom:1px solid var(--borda)}
+  .nav-barra i{width:11px;height:11px;border-radius:50%;display:inline-block;flex:none}
+  .nav-barra i:nth-child(1){background:#e0605a}.nav-barra i:nth-child(2){background:#e0b44a}.nav-barra i:nth-child(3){background:#5fbf62}
+  .nav-url{flex:1;min-width:0;font-family:var(--mono);font-size:.82rem;background:var(--card);border:1px solid var(--borda);border-radius:99px;padding:.25rem .8rem;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nav-url b{color:var(--txt);font-weight:600}
+  .nav-barra button{background:none;border:0;cursor:pointer;font-size:1rem;color:var(--txt2)}
+
+  /* o "app gerado": visual simples e próprio, como sairia de HTML/CSS/JS puros */
+  .app{--a-bg:#ffffff;--a-txt:#222;--a-borda:#ddd;--a-acc:#2e7d5b;--a-acc2:#e7f4ee;--a-hoje:#fff7e0;--a-err:#b3261e;--a-on:#ffffff;
+    background:var(--a-bg);color:var(--a-txt);padding:1.2rem 1.2rem 1.6rem;font-family:system-ui,"Segoe UI",Arial,sans-serif;min-height:380px}
+  :root[data-tema="escuro"] .app{--a-bg:#1d1f1e;--a-txt:#e9ece9;--a-borda:#3a3d3b;--a-acc:#6cc79b;--a-acc2:#21352b;--a-hoje:#3a3420;--a-err:#f28b82;--a-on:#0f241a}
+  @media (prefers-color-scheme:dark){:root:not([data-tema="claro"]) .app{--a-bg:#1d1f1e;--a-txt:#e9ece9;--a-borda:#3a3d3b;--a-acc:#6cc79b;--a-acc2:#21352b;--a-hoje:#3a3420;--a-err:#f28b82;--a-on:#0f241a}}
+  .app-titulo{margin:0 0 .8rem;font-size:1.5rem}
+  .app-form{display:flex;gap:.5rem;flex-wrap:wrap}
+  .app-form input{flex:1;min-width:0;font:inherit;padding:.5rem .7rem;border:1px solid var(--a-borda);border-radius:8px;background:var(--a-bg);color:var(--a-txt)}
+  .app button{font:inherit;cursor:pointer;border:1px solid var(--a-borda);background:var(--a-bg);color:var(--a-txt);border-radius:8px;padding:.4rem .7rem}
+  .app button:disabled{opacity:.45;cursor:not-allowed}
+  .app-form button{background:var(--a-acc);border-color:var(--a-acc);color:var(--a-on);font-weight:600}
+  .app-msg{min-height:1.4em;margin:.5rem 0;font-size:.92rem}
+  .app-msg.ok{color:var(--a-acc)} .app-msg.err{color:var(--a-err);font-weight:600}
+  .app-nav{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin:.4rem 0 .8rem}
+  .app-periodo{font-size:.9rem;opacity:.8;margin:0 .3rem}
+  .app-tabela{overflow-x:auto;position:relative}
+  .app table{border-collapse:collapse;width:100%;font-size:.9rem}
+  .app th,.app td{border:1px solid var(--a-borda);padding:.35rem .4rem;text-align:center;background:transparent}
+  .app thead th{font-weight:600;font-size:.8rem;background:transparent}
+  .app tbody th{text-align:left;font-weight:600;min-width:120px}
+  .app .hoje{background:var(--a-hoje)}
+  .app-dia{width:2.2rem;height:2.2rem;padding:0!important;font-weight:700;font-size:1rem}
+  .app-dia.feito{background:var(--a-acc)!important;border-color:var(--a-acc)!important;color:var(--a-on)!important}
+  .app td.num{white-space:nowrap;font-size:.85rem}
+  .app-acoes{white-space:nowrap}
+  .app-acoes button{padding:.25rem .4rem;margin:0 .1rem}
+  .app-meta{font-weight:400;opacity:.7}
+  .app-vazio{opacity:.8}
+  .app-arquivados{margin-top:1rem}
+  .app-arquivados li{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin:.3rem 0}
+  .app-arquivados li span{flex:1}
+</style>
+</head>
+<body data-raiz="../" data-pagina="app">
+<main>
+  <h1>Passo 3 · App final</h1>
+  <p class="lead">O Monitor de hábitos que o agente construiu, funcionando num navegador simulado. Use à vontade: os dados ficam só neste navegador.</p>
+  <div id="avisos"></div>
+  <div class="navegador" role="region" aria-label="Navegador simulado: Monitor de hábitos">
+    <div class="nav-barra"><i></i><i></i><i></i>
+      <button type="button" id="recarregar" title="Recarregar" aria-label="Recarregar a página">⟳</button>
+      <div class="nav-url"><span class="oculto">Endereço: </span>http://<b>127.0.0.1:8000</b>/</div>
+    </div>
+    <div class="app" id="app"></div>
+  </div>
+  <p class="ilustrativo">Simulação: no projeto real, a página é servida pelo FastAPI (<code>uv run python main.py</code>) e os dados ficam em <code>data/habitos.json</code>. Aqui eles ficam só no seu navegador.</p>
+  <h2>O que conferir (critérios de aceite da spec)</h2>
+  <ul>
+    <li>Crie um hábito só com o nome e marque hoje em <b>menos de 1 minuto</b>.</li>
+    <li>Um clique marca, outro desmarca. Clique em ⟳ (ou F5): continua salvo.</li>
+    <li>A <b>sequência</b> conta até ontem: hoje sem marcação não quebra.</li>
+    <li>Volte semanas para corrigir dias passados; dias futuros não podem ser marcados.</li>
+    <li>Arquivar esconde e guarda o histórico (dá para restaurar); excluir pede confirmação e apaga tudo.</li>
+  </ul>
+</main>
+<script src="../assets/roteiros.js"></script>
+<script src="../assets/sim.js"></script>
+<script src="../assets/habitos-app.js"></script>
+<script>
+(function () {
+  Sim.iniciarPagina();
+  var st = Sim.estado();
+  var feitas = st.feitas.projeto || [];
+  var av = document.getElementById("avisos");
+  if (feitas.indexOf("implement") < 0) {
+    av.innerHTML = "<div class='aviso info'>Você ainda não concluiu o <a href='projeto.html'>Passo 2 · Projeto</a>. Tudo bem: o app funciona mesmo assim, mas vale ver como ele foi gerado.</div>";
+  }
+  if (st.bonus) av.innerHTML += "<div class='aviso ok'>Bônus ativo: use ⚙ num hábito para definir uma <b>meta semanal</b> (ex.: 3 vezes por semana).</div>";
+  st.appAberto = true; Sim.salvar();
+  var alvo = document.getElementById("app");
+  HabitosApp.iniciar(alvo);
+  document.getElementById("recarregar").onclick = function () { HabitosApp.iniciar(alvo); };
+})();
+</script>
+</body>
+</html>

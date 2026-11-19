@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Simulador do Workshop SDD</title>
+  <!-- janela de terminal com o prompt ">_" nas cores do simulador -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#b5552f"/>
+  <rect x="8" y="12" width="48" height="40" rx="7" fill="#1c1b19"/>
+  <circle cx="15" cy="18" r="2" fill="#e0605a"/>
+  <circle cx="21" cy="18" r="2" fill="#e0b44a"/>
+  <circle cx="27" cy="18" r="2" fill="#5fbf62"/>
+  <path d="M16 29 L24 35 L16 41" fill="none" stroke="#e0875f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="28" y="39" width="14" height="4" rx="2" fill="#e8e6df"/>
+</svg>

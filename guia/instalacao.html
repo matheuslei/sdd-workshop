@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guia de instalação · Simulador do Workshop SDD</title>
+<meta name="description" content="Passo a passo real para instalar uv, Python, Spec Kit e o agente (OpenCode ou Claude Code) no Windows, sem administrador.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/sim.css">
+</head>
+<body data-raiz="../" data-pagina="guia">
+<main class="estreito">
+  <h1>Guia de instalação</h1>
+  <p class="lead">Este é o passo a passo <b>real</b>, para fazer na sua máquina antes ou depois do workshop. É o mesmo roteiro do <a href="../simulador/instalacao.html">Passo 1 · Instalação</a>.</p>
+  <div class="aviso info">⏱️ Tempo estimado: 20 a 30 minutos. 🔓 <b>Nenhum passo exige permissão de administrador</b>: tudo é instalado na sua pasta de usuário. Use o ⬛ <b>cmd</b> em tudo, exceto nos passos marcados com 🟦 <b>PowerShell</b>. Os comandos <b>não</b> são intercambiáveis.</div>
+  <div class="abas" role="group" aria-label="Escolha a trilha do guia" id="abas"></div>
+  <div id="conteudo"></div>
+</main>
+<script src="../assets/roteiros.js"></script>
+<script src="../assets/sim.js"></script>
+<script>
+(function () {
+  Sim.iniciarPagina();
+  var esc = Sim.esc, el = Sim.el;
+  var atual = Sim.trilha() || "opencode";
+  function texto(saida) {
+    return (Sim.val(saida) || []).filter(function (p) { return p.t !== "pensa" && p.t !== "cria"; })
+      .map(function (p) { var d = document.createElement("div"); d.innerHTML = p.t === "html" ? p.x : esc(p.x); return d.textContent; }).join("\n");
+  }
+  function desenha() {
+    var abas = document.getElementById("abas"); abas.innerHTML = "";
+    [["opencode", "OpenCode + OpenRouter"], ["claude", "Claude Code"]].forEach(function (t) {
+      var b = el("button", { type: "button", "aria-pressed": atual === t[0] ? "true" : "false" }, t[1]);
+      b.onclick = function () { atual = t[0]; Sim.estado().trilha = atual; Sim.salvar(); var chip = document.querySelector(".chip-trilha"); if (chip) chip.textContent = "Trilha: " + Sim.nomeAgente(); desenha(); };
+      abas.appendChild(b);
+    });
+    var c = document.getElementById("conteudo"); c.innerHTML = "";
+    var grupo = null, n = 0;
+    Sim.etapasDaTrilha(ROTEIROS.instalacao).forEach(function (e) {
+      if (e.grupo !== grupo) { grupo = e.grupo; c.appendChild(el("h2", null, esc(grupo))); }
+      n++;
+      var s = el("section", { class: "passo-guia" });
+      var selo = e.shell === "ps" ? '<span class="selo ps">🟦 PowerShell</span>' : e.shell === "agente" ? '<span class="selo agente">🤖 dentro do ' + esc(Sim.nomeAgente()) + "</span>" : '<span class="selo cmd">⬛ cmd</span>';
+      s.appendChild(el("h3", null, n + ". " + esc(e.titulo) + " " + (e.modo === "botao" ? "" : selo) + (e.conferir ? ' <span class="selo conferir">conferir na documentação oficial</span>' : "")));
+      if (e.explica) s.appendChild(el("div", null, Sim.val(e.explica)));
+      if (e.modo !== "botao") {
+        var cmd = Sim.comandoDe(e);
+        if (e.modo === "chave") s.appendChild(el("p", null, "Cole a <b>sua</b> chave <code>sk-or-...</code> (nunca compartilhe)."));
+        else s.appendChild(Sim.blocoCopiavel(cmd));
+      }
+      var t = texto(e.saida);
+      if (t && e.modo !== "botao") { s.appendChild(el("p", { style: "margin:.4rem 0 .1rem" }, "<small>Resultado esperado (exemplo):</small>")); var pre = el("pre", { class: "bloco" }); pre.textContent = t; s.appendChild(pre); }
+      c.appendChild(s);
+    });
+    c.appendChild(el("h2", null, "Problemas comuns"));
+    var tb = el("div", { class: "tabela-rolagem" });
+    var h = "<table><thead><tr><th>Se aparecer</th><th>Faça</th></tr></thead><tbody>";
+    for (var k in ROTEIROS.problemas) { var p = ROTEIROS.problemas[k]; h += "<tr><td>" + esc(p.titulo) + "</td><td>" + p.causa + (p.comando ? "<br><code>" + esc(p.comando) + "</code>" : "") + "</td></tr>"; }
+    tb.innerHTML = h + "</tbody></table>"; c.appendChild(tb);
+  }
+  desenha();
+})();
+</script>
+</body>
+</html>

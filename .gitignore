@@ -1,0 +1,13 @@
+# Material original do workshop: fica só nesta máquina, não vai para o repositório
+_local/
+
+# Backups locais
+_backup-*.zip
+
+# Skills do Spec Kit geradas para o Claude Code (recriadas com: specify init --here --integration claude)
+.claude/
+
+# Arquivos do sistema
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Início · Simulador do Workshop SDD</title>
+<meta name="description" content="Faça o workshop de SDD com Spec Kit numa simulação no navegador: instalação, prompts e o app final, sem instalar nada.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/sim.css">
+</head>
+<body data-raiz="" data-pagina="inicio">
+<main>
+  <section class="hero">
+    <h1>Workshop SDD com Spec Kit, no navegador</h1>
+    <p class="lead">Não conseguiu instalar o ambiente a tempo? Sem problema. Aqui você faz <b>todo o workshop numa simulação</b>: instala as ferramentas num terminal de mentira, cola os prompts <code>/speckit.*</code> e vê o projeto <b>Monitor de hábitos</b> ficar pronto. Nada é instalado no seu computador.</p>
+  </section>
+
+  <h2 id="trilhas">1. Escolha sua trilha</h2>
+  <div class="trilhas" id="trilhas-opcoes"></div>
+
+  <h2>2. Siga o caminho</h2>
+  <div class="grade" id="areas"></div>
+
+  <div class="aviso info">
+    <b>Como funciona:</b> cada etapa mostra o comando com o botão <b>Copiar</b>. Cole no terminal simulado e pressione Enter. Se o comando não conferir, aparece uma dica. Travou? Use <b>Preencher para mim</b> ou <b>Executar por mim</b>. No celular, toque em <b>▶ Executar</b>, no rodapé. Quer só acompanhar? Use <b>▶ Assistir</b>.
+  </div>
+  <div class="aviso warn">
+    🔐 <b>Nunca cole chaves, senhas ou tokens reais</b> aqui. A simulação usa a chave falsa <code>sk-or-FALSA-curso-sdd</code>. Se colar algo com cara de chave real, o simulador descarta e avisa.
+  </div>
+
+  <h2>Recomeçar</h2>
+  <p>Apaga o progresso dos simuladores, os arquivos simulados e os hábitos do app final. Esses dados ficam só neste navegador.</p>
+  <button type="button" class="btn" id="reiniciar">↺ Reiniciar todo o progresso</button>
+</main>
+<script src="assets/roteiros.js"></script>
+<script src="assets/sim.js"></script>
+<script>
+(function () {
+  Sim.iniciarPagina();
+  var opcoes = [
+    ["opencode", "OpenCode + OpenRouter", "A trilha do guia do workshop: o agente OpenCode no terminal, com um modelo gratuito pelo OpenRouter. Você instala uv, Python, Spec Kit, Node.js e OpenCode."],
+    ["claude", "Claude Code", "O agente é o Claude Code. Você instala uv, Python, Spec Kit e Claude Code. Na vida real, é preciso ter uma conta Claude."]
+  ];
+  var box = document.getElementById("trilhas-opcoes");
+  function desenhaTrilhas() {
+    box.innerHTML = "";
+    opcoes.forEach(function (o) {
+      var b = Sim.el("button", { type: "button", class: "trilha", "aria-pressed": Sim.trilha() === o[0] ? "true" : "false" },
+        "<span class='trilha-tit'>" + (Sim.trilha() === o[0] ? "✓ " : "") + o[1] + "</span><span class='trilha-desc'>" + o[2] + "</span>");
+      b.onclick = function () {
+        Sim.estado().trilha = o[0]; Sim.salvar();
+        var chip = document.querySelector(".chip-trilha"); if (chip) chip.textContent = "Trilha: " + Sim.nomeAgente();
+        desenhaTrilhas(); desenhaAreas();
+      };
+      box.appendChild(b);
+    });
+  }
+  function desenhaAreas() {
+    var g = document.getElementById("areas"); g.innerHTML = "";
+    var pi = Sim.progresso("instalacao", ROTEIROS.instalacao), pp = Sim.progresso("projeto", ROTEIROS.projeto);
+    var areas = [
+      ["Consulta", "Guia e prompts", "O passo a passo real de instalação da sua trilha e todos os prompts da prática, com botão Copiar, para fazer na sua máquina depois.", "guia/instalacao.html", null],
+      ["Passo 1", "Instalação do ambiente", "Instale uv, Python, Spec Kit e o agente num terminal simulado (cmd e PowerShell), até criar o projeto.", "simulador/instalacao.html", pi],
+      ["Passo 2", "Construção do projeto", "Envie os prompts constitution → specify → clarify → plan → tasks → implement e veja os arquivos surgirem.", "simulador/projeto.html", pp],
+      ["Passo 3", "App final", "Use o Monitor de hábitos pronto, aberto em 127.0.0.1:8000 num navegador simulado.", "simulador/app-final.html", { pct: Sim.estado().appAberto ? 100 : 0, txt: Sim.estado().appAberto ? "✓ já aberto" : "ainda não aberto" }]
+    ];
+    areas.forEach(function (a) {
+      var c = Sim.el("div", { class: "card area" },
+        '<span class="num">' + a[0] + "</span><h3>" + a[1] + "</h3><p>" + a[2] + "</p>" +
+        (a[4] ? '<div class="barra" role="presentation"><i style="width:' + a[4].pct + '%"></i></div><small>' + (a[4].txt || (a[4].feitas + " de " + a[4].total + " etapas · " + a[4].pct + "%")) + "</small>" : ""));
+      c.appendChild(Sim.el("a", { class: "btn primario", href: a[3], "aria-label": (a[4] && a[4].pct > 0 && a[4].pct < 100 ? "Continuar: " : "Abrir: ") + a[1] }, a[4] && a[4].pct > 0 && a[4].pct < 100 ? "Continuar →" : "Abrir →"));
+      g.appendChild(c);
+    });
+  }
+  document.getElementById("reiniciar").onclick = function () {
+    if (!confirm("Apagar todo o progresso, os arquivos simulados e os hábitos do app final?")) return;
+    Sim.reiniciarTudo(); location.reload();
+  };
+  desenhaTrilhas(); desenhaAreas();
+})();
+</script>
+</body>
+</html>

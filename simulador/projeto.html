@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2 · Projeto · Simulador do Workshop SDD</title>
+<meta name="description" content="Simulação do fluxo SDD com Spec Kit: envie os prompts ao agente e veja os arquivos do Monitor de hábitos surgirem.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/sim.css">
+</head>
+<body data-raiz="../" data-pagina="projeto">
+<main>
+  <h1>Passo 2 · Construção do projeto</h1>
+  <p id="sub" class="lead"></p>
+  <div id="app"></div>
+</main>
+<script src="../assets/roteiros.js"></script>
+<script src="../assets/projeto-arquivos.js"></script>
+<script src="../assets/sim.js"></script>
+<script>
+(function () {
+  Sim.iniciarPagina();
+  var app = document.getElementById("app");
+  Sim.exigirTrilha(app, function () {
+    var c = Sim.ctx();
+    document.getElementById("sub").innerHTML = "Envie cada prompt ao " + c.agente + " simulado e acompanhe os arquivos que ele cria no painel 📁 Arquivos. " +
+      "Não é preciso ter feito a instalação antes. <a href='../guia/prompts.html'>Ver todos os prompts</a>." +
+      (c.trilha === "claude" ? "<br><small>No Claude Code os comandos do Spec Kit são skills com hífen (<code>/speckit-plan</code>); o simulador aceita as duas formas.</small>" : "");
+    Sim.terminalGuiado(app, {
+      sim: "projeto",
+      etapas: ROTEIROS.projeto,
+      arvore: true,
+      problemas: ["429", "inventou", "ssl", "porta"],
+      tituloFim: "Projeto concluído!",
+      textoFim: "<p>Você seguiu o fluxo completo de SDD: constituição → spec → clarify → plano → tarefas → implementação. Abra os arquivos no painel 📁 Arquivos para revisar o que o agente gerou.</p>",
+      botoesFim: [{ texto: "🌐 Abrir o app final", href: "app-final.html", primario: true }, { texto: "Voltar ao início", href: "../index.html" }]
+    });
+  });
+})();
+</script>
+</body>
+</html>

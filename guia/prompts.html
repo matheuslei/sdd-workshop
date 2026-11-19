@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompts da prática · Simulador do Workshop SDD</title>
+<meta name="description" content="Todos os prompts da prática do Monitor de hábitos, com botão Copiar.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/sim.css">
+</head>
+<body data-raiz="../" data-pagina="prompts">
+<main class="estreito">
+  <h1>Prompts da prática</h1>
+  <p class="lead">Copie cada bloco inteiro e cole no agente, aberto na pasta <code>sdd-workshop</code>. Não coloque dados pessoais ou sensíveis nos prompts. Para praticar sem instalar nada, use o <a href="../simulador/projeto.html">Passo 2 · Projeto</a>.</p>
+  <p id="nota-trilha"></p>
+  <div id="conteudo"></div>
+</main>
+<script src="../assets/roteiros.js"></script>
+<script src="../assets/sim.js"></script>
+<script>
+(function () {
+  Sim.iniciarPagina();
+  var esc = Sim.esc, el = Sim.el;
+  if (Sim.trilha() === "claude") document.getElementById("nota-trilha").innerHTML = "<small>Trilha Claude Code: os comandos aparecem como skills com hífen (<code>/speckit-plan</code>).</small>";
+  var c = document.getElementById("conteudo"), grupo = null;
+  Sim.etapasDaTrilha(ROTEIROS.projeto).forEach(function (e) {
+    if (e.id === "clarify-r1" || e.id === "clarify-r2") return; // viram a tabela de respostas
+    if (e.grupo !== grupo) { grupo = e.grupo; c.appendChild(el("h2", null, esc(grupo))); }
+    var s = el("section", { class: "passo-guia" });
+    s.appendChild(el("h3", null, esc(e.titulo) + (e.opcional ? ' <span class="selo opc">opcional</span>' : "")));
+    s.appendChild(Sim.blocoCopiavel(Sim.comandoDe(e)));
+    if (e.id === "clarify") {
+      var t = "<p><b>Respostas combinadas da turma:</b></p><div class='tabela-rolagem'><table><thead><tr><th>Se perguntar sobre</th><th>Responda</th></tr></thead><tbody>";
+      ROTEIROS.respostasClarify.forEach(function (r) { t += "<tr><td>" + esc(r[0]) + "</td><td>" + esc(r[1]) + "</td></tr>"; });
+      s.appendChild(el("div", null, t + "</tbody></table></div><p><small>As outras dúvidas a IA resolve pela opção mais simples e anota na spec.</small></p>"));
+    }
+    if (e.corrige) { s.appendChild(el("p", { style: "margin:.6rem 0 .2rem" }, "<small>Se não ficou como pedido:</small>")); s.appendChild(Sim.blocoCopiavel(e.corrige)); }
+    if (e.id === "rodar") s.appendChild(el("p", null, "Abra <code>http://127.0.0.1:8000</code>. Para parar: Ctrl+C."));
+    c.appendChild(s);
+  });
+  c.appendChild(el("h3", null, "Deu erro ao rodar? Cole no agente:"));
+  c.appendChild(Sim.blocoCopiavel("Ao rodar uv run python main.py apareceu o erro abaixo. Explique a causa em uma frase e corrija seguindo o plan.md.\n[cole o erro aqui]"));
+  c.appendChild(el("p", null, "<small>No bônus, depois do specify siga com /speckit.clarify, /speckit.plan, /speckit.tasks e /speckit.implement.</small>"));
+})();
+</script>
+</body>
+</html>

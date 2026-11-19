@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 1 · Instalação · Simulador do Workshop SDD</title>
+<meta name="description" content="Simulação guiada da instalação do ambiente do workshop num terminal no navegador.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/sim.css">
+</head>
+<body data-raiz="../" data-pagina="instalacao">
+<main>
+  <h1>Passo 1 · Instalação do ambiente</h1>
+  <p id="sub" class="lead"></p>
+  <div id="app"></div>
+</main>
+<script src="../assets/roteiros.js"></script>
+<script src="../assets/sim.js"></script>
+<script>
+(function () {
+  Sim.iniciarPagina();
+  var app = document.getElementById("app");
+  Sim.exigirTrilha(app, function () {
+    document.getElementById("sub").innerHTML = "Trilha <b>" + Sim.nomeAgente() + "</b>. Siga o guia do workshop numa simulação. Cada etapa indica se o comando é no ⬛ cmd ou no 🟦 PowerShell. " +
+      "<a href='../guia/instalacao.html'>Ver o guia completo</a>.";
+    Sim.terminalGuiado(app, {
+      sim: "instalacao",
+      etapas: ROTEIROS.instalacao,
+      problemas: ["uv", "ssl"],
+      tituloFim: "Ambiente pronto!",
+      textoFim: function (c) { return "<p>Você instalou (na simulação) uv, Python 3.12, Spec Kit e o " + c.agente + ", e criou o projeto <code>sdd-workshop</code>. Agora vamos construir o Monitor de hábitos com SDD.</p>"; },
+      botoesFim: [{ texto: "Ir para o Passo 2 · Projeto →", href: "projeto.html", primario: true }, { texto: "Ver o guia real", href: "../guia/instalacao.html" }]
+    });
+  });
+})();
+</script>
+</body>
+</html>
