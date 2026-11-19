@@ -75,5 +75,13 @@ assets/habitos-app.js      o Monitor de hábitos
 - **Não é oficial:** este projeto não tem vínculo com GitHub, Anthropic, OpenCode ou OpenRouter. Os nomes são citados só para identificar as ferramentas usadas no workshop.
 - **Material em revisão:** o conteúdo é um material didático em construção. Revise antes de usar com uma turma.
 
+## Contribuidores
+- Jessica Oliveira da Silva
+- Luiz Felipe Faria Ricardo
+
 ## Licença
-_(defina a licença antes de publicar, por exemplo MIT para o código)_
+Distribuído sob a **licença MIT**: você pode usar, copiar, modificar e redistribuir o projeto, desde que mantenha o aviso de copyright. O texto completo está em [`LICENSE`](LICENSE).
+
+Copyright © 2026 Matheus Leite, Jessica Oliveira da Silva e Luiz Felipe Faria Ricardo.
+
+Os comandos e prompts do workshop de SDD reproduzidos na simulação pertencem aos seus autores originais e não são cobertos por esta licença. Os nomes de ferramentas e marcas citados (GitHub, Spec Kit, Claude Code, OpenCode, OpenRouter) pertencem aos respectivos donos.
